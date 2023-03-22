@@ -1,0 +1,45 @@
+- 오드로이드 루팅 관련 -------------------------------------
+https://codewalkerster.blogspot.com/2019/04/how-to-use-supersu-on-odroid-n2-android.html (참고url)
+
+adb shell
+console:/ $ su
+console:/ # cd /sdcard/Download/
+console:/sdcard/Download # dd if=/dev/block/boot of=./boot.img
+32768+0 records in
+32768+0 records out
+16777216 bytes transferred in 0.265 secs (63310249 bytes/sec)
+console:/sdcard/Download #
+
+Magisk 앱으로 /sdcard/Download/에 있는 부트파일을 다시설치 하면
+/sdcard/Download/magisk_patched.img 생성
+
+console:/sdcard/Download # dd if=./magisk_patched.img of=/dev/block/boot     
+
+- 코드에서 USB 관련 권한팝업 없이 수락 하는방법 -------------------------------------
+adb root
+adb shell
+settings put global hidden_api_policy_pre_p_apps  1
+settings put global hidden_api_policy_p_apps 1
+---------------------------------------------------------------------
+
+
+- 오드로이드 부팅시 자동원격 관련 -------------------------------------
+adb remount
+adb shell
+
+$ adb remount
+$ adb shell
+# vi /vendor/etc/init/hw/init.odroid.board.rc 
+
+...
+on post-fs-data
+    insmod /vendor/lib/modules/btrtl.ko
+    insmod /vendor/lib/modules/btusb.ko
+    insmod /vendor/lib/modules/hid-multitouch.ko
+    insmod /vendor/lib/modules/dwav-usb-mt.ko
+    insmod /vendor/lib/modules/ftdi_sio.ko (추가)
+
+vi /system/vendor/build.prop
+...
+_service.adb.tcp.port=5555 -> service.adb.tcp.port=5555 (수정)
+---------------------------------------------------------------------
